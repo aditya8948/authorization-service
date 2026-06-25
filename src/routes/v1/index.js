@@ -4,6 +4,10 @@ const { InfoController } = require('../../controllers');
 
 const router = express.Router();
 
+const userRoutes = require('./user_routes');
+
 router.get('/info', InfoController.info);
 
-module.exports = router;
+router.use('/signup', userRoutes)
+
+module.exports = router;  
