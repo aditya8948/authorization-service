@@ -1,7 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 
 const {ErrorResponse} = require('../utils/common');
-const {UserService} = require('../services')
+const {UserService} = require('../services');
+const { message } = require("../utils/common/error_response");
 
 function validateAuthRequest(req , res, next) {
     if(!req.body.email){
@@ -32,7 +33,21 @@ async function checkAuth(req, res, next) {
         return res.status(StatusCodes.BAD_REQUEST).json(error)
     }
 }
+
+
+async function isadmin(req, res, next){
+    try {
+        const response = await UserService.isadmin(req.user)
+        if(!response){
+            return res.status(StatusCodes.UNAUTHORIZED).json({message: 'user is not authorized'})
+        }
+        next();
+    } catch (error) {
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(error)
+    }
+}
 module.exports = {
     validateAuthRequest,
-    checkAuth
+    checkAuth,
+    isadmin
 };

@@ -26,7 +26,7 @@ async function createUser(data){
     }
 }
 
-async function sigin(data){
+async function signin(data){
     try {
         const user = await userRepository.getUserByEmail(data.email);
         if(!user){
@@ -65,9 +65,65 @@ async function isAuthenticated(token) {
 }
 
 
+async function addRoleToUser(data){
+    try {
+        const user = await userRepository.get(data.id);
+        if(!user){
+            throw new AppError('No user found for the given id' , StatusCodes.NOT_FOUND)
+        }
+
+        let role;
+        const roleValue = data.role;
+        if (roleValue === undefined || roleValue === null) {
+            throw new AppError('Missing role value', StatusCodes.BAD_REQUEST);
+        }
+
+        if (typeof roleValue === 'number' || /^\d+$/.test(String(roleValue))) {
+            role = await roleRepository.getRoleById(Number(roleValue));
+        } else {
+            role = await roleRepository.getRoleByName(roleValue);
+        }
+
+        if(!role){
+            throw new AppError('No role found for the given identifier' , StatusCodes.NOT_FOUND)
+        }
+
+        const hasRoleAssigned = await user.hasRole(role);
+        if (!hasRoleAssigned) {
+            await user.addRole(role);
+        }
+        return user;
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw error;
+    }
+}
+
+async function isadmin(id){
+    try {
+        const user = await userRepository.get(id);
+        if(!user){
+            throw new AppError('No user found for the given id' , StatusCodes.NOT_FOUND)
+        }
+        const role = await roleRepository.getRoleByName(Enums.USER_ROLES.ADMIN);
+        if(!role){
+            throw new AppError('No role found for the given name' , StatusCodes.NOT_FOUND)
+        }
+        return user.hasRole(role)
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw error;
+    }
+}
 
 module.exports = {
         createUser, 
-        sigin,
-        isAuthenticated
+        signin,
+        isAuthenticated,
+        addRoleToUser,
+        isadmin
 }

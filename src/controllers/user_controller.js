@@ -28,7 +28,7 @@ async function createUser(req, res){
 
 async function signin(req, res){
     try {
-        const response = await UserService.sigin({
+        const response = await UserService.signin({
             email: req.body.email,
             password: req.body.password,
         })
@@ -44,7 +44,31 @@ async function signin(req, res){
     }
 }
 
+
+async function addRoleToUser(req, res){
+    try {
+        const response = await UserService.addRoleToUser({
+            role: req.body.role,
+            id: req.body.id
+        })
+        SuccessResponse.data = response;
+        return res
+                 .status(StatusCodes.CREATED)
+                 .json(SuccessResponse)
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res
+                  .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json(ErrorResponse);
+    }
+}
+
+
+
+
+
 module.exports = {
     createUser,
-    signin
+    signin,
+    addRoleToUser
 }
