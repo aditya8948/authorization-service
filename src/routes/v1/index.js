@@ -8,7 +8,6 @@ const router = express.Router();
 const userRoutes = require('./user_routes');
 
 router.get('/info', 
-    authRequestMiddleware.checkAuth,
     InfoController.info);
 
 router.use('/user', userRoutes)

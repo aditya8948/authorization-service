@@ -41,6 +41,9 @@ async function signin(data){
         const jwt = await Auth.createToken({id:user.id, email: user.email});
         return jwt;
     } catch (error) {
+        if(error instanceof AppError){
+            throw error;
+        }
         throw new AppError('something went wrong', StatusCodes.INTERNAL_SERVER_ERROR)
     }
 }
@@ -57,8 +60,14 @@ async function isAuthenticated(token) {
         }
         return user.id
     } catch (error) {
-        if(error.name =='JsonWebTokenError'){
+        if(error.name === 'TokenExpiredError'){
+            throw new AppError('JWT token has expired', StatusCodes.UNAUTHORIZED)
+        }
+        if(error.name === 'JsonWebTokenError'){
             throw new AppError('Invalid JWT token', StatusCodes.BAD_REQUEST)
+        }
+        if(error.name === 'NotBeforeError'){
+            throw new AppError('JWT token is not active', StatusCodes.UNAUTHORIZED)
         }
         throw error;
     }

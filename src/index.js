@@ -31,7 +31,7 @@ app.use('/flightService', createProxyMiddleware({
 app.use('/bookingService', createProxyMiddleware({
         target:ServerConfig.BOOKING_SERVICE,
         changeOrigin:true, 
-        pathRewrite: {'^/BookingService' : '/'}  
+        pathRewrite: {'^/bookingService' : '/'}  
 }));
 
 app.use(express.json());

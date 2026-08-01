@@ -1,8 +1,8 @@
-const success  = {
+const createSuccessResponse = ({ message = 'successfully completed the request', data = {} } = {}) => ({
     success: true,
-    message: 'successfully completed the request',
-    data: {},
+    message,
+    data,
     error: {}
-}
+});
 
-module.exports = success;
+module.exports = createSuccessResponse;

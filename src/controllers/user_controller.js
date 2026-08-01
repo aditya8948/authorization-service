@@ -13,15 +13,13 @@ async function createUser(req, res){
             email: req.body.email,
             password: req.body.password,
         })
-        SuccessResponse.data = response;
         return res
                  .status(StatusCodes.CREATED)
-                 .json(SuccessResponse)
+                 .json(SuccessResponse({ data: response }))
     } catch (error) {
-        ErrorResponse.error = error;
         return res
                   .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
-                  .json(ErrorResponse);
+                  .json(ErrorResponse({ error }));
     }
 }
 
@@ -32,15 +30,13 @@ async function signin(req, res){
             email: req.body.email,
             password: req.body.password,
         })
-        SuccessResponse.data = response;
         return res
                  .status(StatusCodes.CREATED)
-                 .json(SuccessResponse)
+                 .json(SuccessResponse({ data: response }))
     } catch (error) {
-        ErrorResponse.error = error;
         return res
                   .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
-                  .json(ErrorResponse);
+                  .json(ErrorResponse({ error }));
     }
 }
 
@@ -51,15 +47,13 @@ async function addRoleToUser(req, res){
             role: req.body.role,
             id: req.body.id
         })
-        SuccessResponse.data = response;
         return res
                  .status(StatusCodes.CREATED)
-                 .json(SuccessResponse)
+                 .json(SuccessResponse({ data: response }))
     } catch (error) {
-        ErrorResponse.error = error;
         return res
                   .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
-                  .json(ErrorResponse);
+                  .json(ErrorResponse({ error }));
     }
 }
 
