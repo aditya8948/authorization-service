@@ -1,18 +1,27 @@
 const { StatusCodes } = require('http-status-codes');
 const {UserRepository, RoleRepository} = require('../repositories');
+const {sequelize} = require('../models');
 const AppError  = require('../utils/errors/app_error');
 const {Auth, Enums} = require('../utils/common')
-const bcrypt = require('bcrypt');
 
 const roleRepository = new RoleRepository();
 const userRepository = new UserRepository();
 
 async function createUser(data){
     try {
-        const user = await userRepository.create(data);
-        const role = await roleRepository.getRoleByName(Enums.USER_ROLES.CUSTOMER)
-        await user.addRole(role)
-        return user ;
+        const user = await sequelize.transaction(async (transaction) => {
+            const newUser = await userRepository.create(data, { transaction });
+            const role = await roleRepository.getRoleByName(Enums.USER_ROLES.CUSTOMER, { transaction });
+
+            if(!role){
+                throw new AppError('No role found for the given name' , StatusCodes.NOT_FOUND)
+            }
+
+            await newUser.addRole(role, { transaction })
+            return newUser ;
+        });
+
+        return user;
     } catch (error) {
       
         if(error.name == 'SequelizeValidationError' || error.name == 'SequelizeUniqueConstraintError'){
